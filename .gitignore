@@ -1,0 +1,17 @@
+# ไฟล์ build หรือ binaries
+/bin/
+/obj/
+
+# ไฟล์จาก IDE
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ระบบปฏิบัติการ
+.DS_Store
+Thumbs.db
+
+# ไฟล์ config ส่วนตัว
+.env
