@@ -1,26 +1,19 @@
 package routes
 
 import (
-	"time"
-
 	"github.com/cuffymate1/pos-api/controller"
 	"github.com/cuffymate1/pos-api/middleware"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
 func GetRoutes(app *fiber.App) {
 	// ใช้ rate limiter กับทุก route
-	app.Use(limiter.New(limiter.Config{
-		Max:        5,                // ขอได้สูงสุด 5 ครั้ง
-		Expiration: 30 * time.Second, // ภายใน 30 วินาที
-		LimitReached: func(c *fiber.Ctx) error {
-			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
-				"error": "Too many requests. Please try again later.",
-			})
-		},
-	}))
-	app.Post("login", controller.Login)
+	// Add security middleware
+	app.Use(middleware.SecurityHeaders())
+	app.Use(middleware.RateLimiter())
+	app.Use(middleware.CORSConfig())
+	app.Post("/login", controller.Login)
+	app.Post("/logout", controller.Logout)
 	app.Use(middleware.VerifyToken())
 	// แยก Group
 	users := app.Group("/User", middleware.OnlyAdmin())

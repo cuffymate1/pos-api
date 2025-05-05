@@ -18,6 +18,7 @@ func main() {
 	config.ConnDb()
 
 	app := fiber.New()
+
 	routes.GetRoutes(app)
 
 	if err := app.Listen(":3000"); err != nil {

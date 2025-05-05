@@ -43,3 +43,18 @@ func Login(c *fiber.Ctx) error {
 		"message": "Login Succesful",
 	})
 }
+
+func Logout(c *fiber.Ctx) error {
+	c.Cookie(&fiber.Cookie{
+		Name:     "Jwt",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+		Secure:   true,
+		SameSite: "None",
+	})
+
+	return c.JSON(fiber.Map{
+		"message": "Logout Succesful",
+	})
+}
