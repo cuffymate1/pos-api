@@ -1,12 +1,25 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/cuffymate1/pos-api/controller"
 	"github.com/cuffymate1/pos-api/middleware"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
 func GetRoutes(app *fiber.App) {
+	// ใช้ rate limiter กับทุก route
+	app.Use(limiter.New(limiter.Config{
+		Max:        5,                // ขอได้สูงสุด 5 ครั้ง
+		Expiration: 30 * time.Second, // ภายใน 30 วินาที
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"error": "Too many requests. Please try again later.",
+			})
+		},
+	}))
 	app.Post("login", controller.Login)
 	app.Use(middleware.VerifyToken())
 	// แยก Group
@@ -30,4 +43,18 @@ func GetRoutes(app *fiber.App) {
 	categories.Post("/Create", controller.CreateCategory)
 	categories.Post("/Update/:id", controller.UpdateCategory)
 	categories.Post("/Delete/:id", controller.DeleteCategory)
+
+	toppings := app.Group("/Topping")
+	toppings.Get("/List", controller.ListToppings)
+	toppings.Get("/:id", controller.GetTopping)
+	toppings.Post("/Create", controller.CreateTopping)
+	toppings.Post("/Update/:id", controller.UpdateTopping)
+	toppings.Post("/Delete/:id", controller.DeleteTopping)
+
+	order := app.Group("/Order")
+	order.Get("/List", controller.ListOrders)
+	order.Get("/:id", controller.GetOrder)
+	order.Post("/Create", controller.CreateOrder)
+	order.Post("/Update/:id", controller.UpdateOrder)
+	order.Post("/Delete/:id", controller.DeleteOrder)
 }

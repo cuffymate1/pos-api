@@ -45,7 +45,7 @@ func ConnDb() {
 		panic("failed to connect to database")
 	}
 
-	db.AutoMigrate(&models.Product{}, &models.Category{}, &models.Users{})
+	db.AutoMigrate(&models.Product{}, &models.Category{}, &models.Users{}, &models.Order{}, &models.OrderItem{}, &models.Topping{}, &models.OrderItemTopping{}, &models.Payment{})
 
 	fmt.Println("connect to database completed!")
 }
